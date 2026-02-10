@@ -2,16 +2,16 @@
 
 ## What is Chatwave?
 
-Chatwave is a lightweight, web-based real-time chat application designed to enable seamless communication between multiple users. The application allows users to authenticate, view online participants, and exchange messages through both group and private chats, all within a clean and intuitive interface.
+Chatwave is a web-based real-time chat application designed to enable seamless communication between multiple users. The application allows users to authenticate, view online participants, and exchange messages through both group and private chats, all within a clean and intuitive interface.
 
-Chatwave is built using plain JavaScript, HTML, and CSS, focusing on simplicity, usability, and maintainability while adhering to modern software engineering best practices.
+Chatwave is built using plain JavaScript, HTML, and CSS, focusing on simplicity, usability, and maintainability.
 
 ---
 
 ## Why Choose Chatwave?
 
 **Real-Time Communication**  
-Chatwave enables instant message exchange, allowing users to communicate efficiently without page refreshes.
+Chatwave enables instant message exchange, allowing users to communicate efficiently.
 
 **Simplicity & Performance**  
 Built using vanilla JavaScript, HTML, and CSS, the application avoids unnecessary complexity while maintaining responsiveness and cross-browser compatibility.
@@ -40,7 +40,7 @@ Chatwave is a simple real-time chat application that allows authenticated users 
 - Users can sign up with a unique username and password.
 - Users can log in using valid credentials.
 - Users can log out of the application.
-- Non-existing users are validated and denied access.
+- Non-existing users are denied access.
 
 ---
 
@@ -86,6 +86,12 @@ Chatwave is a simple real-time chat application that allows authenticated users 
 
 ## Running the Application
 
+### Accessing the deployed version
+1. Follow the link:
+   ```bash
+   https://rrusso15.github.io/chatwave/
+   ```
+
 ### Local Setup
 1. Clone the repository:
    ```bash
@@ -128,7 +134,7 @@ Chatwave is a simple real-time chat application that allows authenticated users 
 
 ---
 
-## Bonus Features (Optional)
+## Bonus Features
 - User typing indicators.
 - Username change functionality.
 - Message formatting options (bold, italic).
