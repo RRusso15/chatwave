@@ -1,9 +1,54 @@
+<!--
+aurthor: Russell Tanaka
+Data: 10/02/2026
+-->
 <!DOCTYPE html>
 <html>
     <head>
         <title>Chatwave</title>
+        <link rel="stylesheet" href="styles/index.css">
     </head>
     <body>
-        <h1>Chatwave</h1>
+        <div class="container">
+            <div class="left-panel"><!--left image part-->
+                <div class="overlay"></div>
+            </div>
+
+            <div class="right-panel">
+                <div class="form-wrapper">
+                    <div class="logo-section">
+                        <img src="assets/icons/logo.png" alt="Chatwave Logo" class="logo">
+                    </div>
+
+                    <h2 class="form-title">Access your Account</h2>
+                    <p class="form-subtitle">Enter your username and password to access your account</p>
+
+                    <form class="login-form"><!--Form content for logging in-->
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <div class="input-wrapper">
+                                <img src="assets/icons/user-icon.png" class="icon">
+                                <input type="text" id="username" placeholder="Enter your username" required>
+                            </div>
+                            <div class="input-wrapper">
+                                <img src="assets/icons/lock-icon.png" class="icon">
+                                <input type="password" id="password" placeholder="Enter your password" required>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-signin">Sign In</button>
+
+                        <p class="register-link">
+                            Dont have an account? <a href="#">Register now.</a>
+                        </p>
+                    </form>
+
+                    <footer class="page-footer">
+                        <p>Copyright &copy 2025 Chatwave Enterprise LTD.</p>
+                    </footer>
+                </div>
+            </div>
+
+        </div>
     </body>
 </html>
