@@ -20,6 +20,8 @@ const messageInput = document.querySelector(".chat-input input");
 const emptyState = document.getElementById("emptyState");
 const chatContent = document.getElementById("chatContent");
 
+const settingsBtn = document.getElementById("settingsBtn");
+
 
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
@@ -307,4 +309,10 @@ window.addEventListener("storage", function (e) {
         groups = JSON.parse(e.newValue) || [];
         renderList();
     }
+});
+
+
+
+settingsBtn.addEventListener("click", function () {
+    window.location.href = "./settings.html";
 });
