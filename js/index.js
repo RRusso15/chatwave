@@ -23,7 +23,7 @@ loginForm.addEventListener("submit", function(event){
     //if user exists
     user.online=true;
     localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    sessionStorage.setItem("currentUser", JSON.stringify(user));
 
     window.location.href='./pages/chat.html';
 })
