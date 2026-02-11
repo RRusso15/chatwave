@@ -22,6 +22,17 @@ const chatContent = document.getElementById("chatContent");
 
 const settingsBtn = document.getElementById("settingsBtn");
 
+const addGroupBtn = document.getElementById("addGroupBtn");
+const groupModal = document.getElementById("groupModal");
+const profileModal = document.getElementById("profileModal");
+const overlay = document.getElementById("modalOverlay");
+
+const closeGroupModal = document.getElementById("closeGroupModal");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+const createGroupBtn = document.getElementById("createGroupBtn");
+const groupNameInput = document.getElementById("groupNameInput");
+
 
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
@@ -29,6 +40,94 @@ let groups = JSON.parse(localStorage.getItem("groups")) || [];
 
 let activeTab = "Friends";
 let activeChat = null;
+
+
+//opening modals for rgoup or profile view
+
+const profileHeader = document.querySelector(".chat-header");
+
+
+addGroupBtn.addEventListener("click", () => {
+    overlay.classList.add("active");
+    groupModal.classList.add("active");
+});
+
+profileHeader.addEventListener("click", () => {
+
+    if (!activeChat) return;
+
+    overlay.classList.add("active");
+    profileModal.classList.add("active");
+
+    const profileUsername = document.getElementById("profileUsername");
+    const profileLastSeen = document.getElementById("profileLastSeen");
+    const profileAvatar = document.getElementById("profileAvatar");
+
+    if (activeChat.type === "group") {
+
+        const group = groups.find(g => g.id == activeChat.id);
+
+        profileUsername.textContent = group?.name || "Group";
+        profileLastSeen.textContent = "Group Chat";
+        profileAvatar.src = "../assets/user-profiles/avatar1.png";
+
+    } else {
+
+        const otherUserId = activeChat.id
+            .split("_")
+            .find(uid => uid !== currentUser.id);
+
+        const otherUser = users.find(u => u.id == otherUserId);
+
+        profileUsername.textContent = otherUser?.username || "User";
+        profileLastSeen.textContent = otherUser?.online
+            ? "User Online"
+            : "User Offline";
+
+        profileAvatar.src = `../assets/user-profiles/avatar${randomAvatar()}.png`;
+    }
+});
+
+
+
+function closeModals() {
+    overlay.classList.remove("active");
+    groupModal.classList.remove("active");
+    profileModal.classList.remove("active");
+}
+
+overlay.addEventListener("click", closeModals);
+closeGroupModal.addEventListener("click", closeModals);
+closeProfileModal.addEventListener("click", closeModals);
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModals();
+});
+
+//create a new group
+createGroupBtn.addEventListener("click", () => {
+    const groupName = groupNameInput.value.trim();
+
+    if (!groupName) {
+        alert("Please enter a group name");
+        return;
+    }
+
+    const newGroup = {
+        id: Date.now(),
+        name: groupName,
+        createdAt: new Date().toISOString()
+    };
+
+    groups.push(newGroup);
+
+    localStorage.setItem("groups", JSON.stringify(groups));
+
+    groupNameInput.value = "";
+    closeModals();
+    renderList();
+});
+
 
 
 //listen  for tab close
