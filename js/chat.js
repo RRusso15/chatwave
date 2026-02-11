@@ -1,3 +1,11 @@
+//check if logged in
+let currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+
+if (!currentUser) {
+    window.location.href = "../index.html";
+}
+
+
 const chatList = document.getElementById("chatList");
 const chatPanel = document.getElementById("chatPanel");
 const leftPanel = document.getElementById("leftPanel");
@@ -9,7 +17,10 @@ const lastSeen = document.querySelector(".last-seen");
 const sendIcon = document.getElementById("send-icon");
 const messageInput = document.querySelector(".chat-input input");
 
-let currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+const emptyState = document.getElementById("emptyState");
+const chatContent = document.getElementById("chatContent");
+
+
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
 let groups = JSON.parse(localStorage.getItem("groups")) || [];
@@ -140,6 +151,8 @@ chatList.addEventListener("click", function (e) {
         lastSeen.textContent = otherUser?.online ? "Private Chat: User Online" : "Private Chat: User Offline";
     }
 
+    emptyState.style.display = "none";
+    chatContent.style.display = "flex";
 
     renderMessages();
 
@@ -162,13 +175,26 @@ function renderMessages() {
 
     convo.forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
+        const sender = users.find(u => u.id === msg.senderId);
+
+        let senderNameTag = "";
+
+        // Only show sender name in GROUP chats and not for yourself
+        if (activeChat.type === "group" && !isSent) {
+            senderNameTag = `<div class="sender-name">${sender?.username}</div>`;
+        }
 
         chatMessages.innerHTML += `
-            <div class="message ${isSent ? "sent" : "received"}">
-                ${msg.content}
+            <div class="message-wrapper ${isSent ? "sent-wrapper" : "received-wrapper"}">
+                ${senderNameTag}
+                <div class="message ${isSent ? "sent" : "received"}">
+                    <div class="message-text">${msg.content}</div>
+                    <div class="message-time">${formatTime(msg.timestamp)}</div>
+                </div>
             </div>
         `;
     });
+
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -211,7 +237,10 @@ function getLastMessage(type, chatId) {
         .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
     if (convo.length === 0) return null;
-    return convo[convo.length - 1].content;
+
+    const last = convo[convo.length - 1].content;
+    return last.length > 50 ? last.substring(0, 50) + "..." : last;
+
 }
 
 function generatePrivateChatId(user1, user2) {
@@ -220,6 +249,16 @@ function generatePrivateChatId(user1, user2) {
 
 function randomAvatar() {
     return Math.floor(Math.random() * 7) + 1;
+}
+
+//get time from timestamp
+function formatTime(isoString) {
+    const date = new Date(isoString);
+
+    return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 

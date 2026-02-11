@@ -48,24 +48,32 @@ Date: 11/02/2026
     <!-- RIGHT PANEL -->
     <div class="chat-panel" id="chatPanel">
 
-        <div class="chat-header">
-            <button class="back-btn" id="backBtn">Back</button>
+        <div id="emptyState" class="empty-state">
+            <h2>Welcome to Chatwave</h2>
+            <p>Select a conversation to start chatting</p>
+        </div>
 
-            <img src="../assets/user-profiles/avatar3.png" class="chat-avatar">
-            <div>
-                <h3 id="chatName">John Doe</h3>
-                <p class="last-seen">Offline/Online</p>
+        <div class="chat-content" id="chatContent">
+
+            <div class="chat-header">
+                <img class="back-btn" id="backBtn" src="../assets/icons/black-back-icon.png">
+
+                <img src="../assets/user-profiles/avatar3.png" class="chat-avatar">
+                <div>
+                    <h3 id="chatName"></h3>
+                    <p class="last-seen"></p>
+                </div>
             </div>
+
+            <div class="chat-messages" id="chatMessages"></div>
+
+            <div class="chat-input">
+                <input type="text" placeholder="Type a message">
+                <img src="../assets/icons/send-icon.png" class="send-icon" id="send-icon">
+            </div>
+
         </div>
 
-        <div class="chat-messages" id="chatMessages">
-            <!-- Messages dynamically inserted -->
-        </div>
-
-        <div class="chat-input">
-            <input type="text" placeholder="Type a message">
-            <img src="../assets/icons/send-icon.png" class="send-icon" id="send-icon">
-        </div>
 
     </div>
 
