@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "username": "russell",
+      "password": "123456",
+      "groups": ["g1"]
+    },
+    {
+      "id": "u2",
+      "username": "john",
+      "password": "password123",
+      "groups": ["g1", "g2"]
+    }
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "name": "General",
+      "members": ["u1", "u2"],
+      "createdBy": "u1"
+    },
+    {
+      "id": "g2",
+      "name": "Project Team",
+      "members": ["u2"],
+      "createdBy": "u2"
+    }
+  ]
+}
