@@ -3,16 +3,21 @@ import { initializeStorage } from "./services/storage-service.js";
 initializeStorage();
 
 const loginForm = document.querySelector(".login-form");
-loginForm.addEventListener("submit", function(event){
+
+if (loginForm) {
+    loginForm.addEventListener("submit", handleLogin);
+}
+
+function handleLogin(event) {
     event.preventDefault();
 
-    const usernameInput = document.getElementById("username").value.trim();
-    const passwordInput = document.getElementById("password").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    //get users from storage and find specific user
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    const user=users.find(
-        u=> u.username===usernameInput && u.password ===passwordInput
+
+    const user = users.find(
+        u => u.username === username && u.password === password
     );
 
     if (!user) {
@@ -20,10 +25,9 @@ loginForm.addEventListener("submit", function(event){
         return;
     }
 
-    //if user exists
-    user.online=true;
+    user.online = true;
     localStorage.setItem("users", JSON.stringify(users));
     sessionStorage.setItem("currentUser", JSON.stringify(user));
 
-    window.location.href='./pages/chat.html';
-})
+    window.location.href = "./pages/chat.html";
+}
