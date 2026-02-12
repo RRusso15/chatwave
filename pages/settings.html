@@ -1,0 +1,81 @@
+<!--
+Author: Russell Tanaka
+Date: 11/02/2026
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Chatwave - Settings</title>
+        <link rel="stylesheet" href="../styles/settings.css">
+        <script type="module" src="../js/settings.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+
+    <body>
+        <div class="container">
+
+            <aside class="left-panel">
+                <button class="circle-btn" id="backBtn" aria-label="Go back">
+                    <img src="../assets/icons/black-back-icon.png" alt="Back" class="button-icon">
+                </button>
+
+                <div class="logo-section">
+                    <img src="../assets/icons/logo.png" alt="Chatwave Logo" class="logo">
+                </div>
+
+                <nav class="chat-tabs" aria-label="Settings navigation">
+                    <button class="tab active" type="button">Settings</button>
+                </nav>
+            </aside>
+
+            <main class="right-panel">
+
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="./chat.html">Home</a> <span aria-hidden="true">›</span> <span>Settings</span>
+                </nav>
+
+                <section class="settings-content">
+
+                    <header>
+                        <h1>My Profile</h1>
+                        <p class="subtitle">Manage your profile details.</p>
+                    </header>
+
+                    <form id="settings-form" novalidate>
+
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword">
+                        </div>
+
+                        <p id="formMessage" class="form-message" aria-live="polite"></p>
+
+                        <div class="button-group">
+                            <button type="button" id="cancelBtn" class="btn-cancel">Cancel</button>
+                            <button type="submit" class="btn-save">Save</button>
+                        </div>
+
+                    </form>
+
+                    <section class="logout-section">
+                        <button class="logout-btn" type="button">
+                            <img src="../assets/icons/logout-icon.png" alt="Logout icon" class="logout-icon">
+                            Log out
+                        </button>
+                    </section>
+                </section>
+            </main>
+        </div>
+    </body>
+</html>

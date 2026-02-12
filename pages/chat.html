@@ -2,81 +2,113 @@
 Author: Russell Tanaka
 Date: 11/02/2026
 -->
-
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Chatwave - Chat</title>
-    <link rel="stylesheet" href="../styles/chat.css">
-    <script type="module" src="../js/chat.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Chatwave - Chat</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../styles/chat.css">
+    </head>
 
-<body>
-<div class="container">
+    <body>
+        <div class="container">
+            <aside class="left-panel" id="leftPanel">
 
-    <!-- LEFT PANEL -->
-    <div class="left-panel" id="leftPanel">
-
-        <div class="logo-section">
-            <img src="../assets/icons/logo.png" class="logo">
-        </div>
-
-        <div class="search-box">
-            <img src="../assets/icons/search-icon.png" class="icon">
-            <input type="text" placeholder="Search chats">
-        </div>
-
-        <div class="chat-tabs">
-            <button class="tab active">Friends</button>
-            <button class="tab">Groups</button>
-            <button class="tab">Online</button>
-        </div>
-
-        <div class="chat-list" id="chatList">
-            <!-- Chat items dynamically loaded -->
-        </div>
-
-        <div class="bottom-buttons">
-            <button class="circle-btn"><img src="../assets/icons/gear-icon.png" class="button-icon"></button>
-            <button class="circle-btn"><img src="../assets/icons/plus-icon.png" class="button-icon"></button>
-        </div>
-
-    </div>
-
-
-    <!-- RIGHT PANEL -->
-    <div class="chat-panel" id="chatPanel">
-
-        <div id="emptyState" class="empty-state">
-            <h2>Welcome to Chatwave</h2>
-            <p>Select a conversation to start chatting</p>
-        </div>
-
-        <div class="chat-content" id="chatContent">
-
-            <div class="chat-header">
-                <img class="back-btn" id="backBtn" src="../assets/icons/black-back-icon.png">
-
-                <img src="../assets/user-profiles/avatar3.png" class="chat-avatar">
-                <div>
-                    <h3 id="chatName"></h3>
-                    <p class="last-seen"></p>
+                <div class="logo-section">
+                    <img src="../assets/icons/logo.png" alt="Chatwave Logo" class="logo">
                 </div>
+
+                <div class="search-box">
+                    <img src="../assets/icons/search-icon.png" alt="" class="icon">
+                    <input type="text" placeholder="Search chats" id="searchInput">
+                </div>
+
+                <nav class="chat-tabs">
+                    <button class="tab active">Friends</button>
+                    <button class="tab">Groups</button>
+                    <button class="tab">Online</button>
+                </nav>
+
+                <div class="chat-list" id="chatList"></div>
+
+                <div class="bottom-buttons">
+                    <button class="circle-btn" id="settingsBtn">
+                        <img src="../assets/icons/gear-icon.png" alt="" class="button-icon">
+                    </button>
+                    <button class="circle-btn" id="addGroupBtn">
+                        <img src="../assets/icons/plus-icon.png" alt="" class="button-icon">
+                    </button>
+                </div>
+            </aside>
+
+            <main class="chat-panel" id="chatPanel">
+
+                <div id="emptyState" class="empty-state">
+                    <h2>Welcome to Chatwave</h2>
+                    <p>Select a conversation to start chatting</p>
+                </div>
+
+                <section class="chat-content" id="chatContent">
+
+                    <header class="chat-header" id="chatHeader">
+                        <button class="back-btn" id="backBtn">
+                            &lt;
+                        </button>
+
+                        <img src="../assets/user-profiles/avatar3.png" alt="" class="chat-avatar">
+                        <div>
+                            <h3 id="chatName"></h3>
+                            <p class="last-seen"></p>
+                            <div class="typing-indicator" id="typingIndicator"></div>
+                        </div>
+                    </header>
+
+                    <div class="chat-messages" id="chatMessages"></div>
+
+                    <div class="chat-input">
+                        <div id="replyPreview" class="reply-preview" style="display:none;">
+                            <span id="replyText"></span>
+                            <button id="cancelReply">X</button>
+                        </div>
+
+                        <div class="input-row">
+                            <input type="text" placeholder="Type a message">
+                            <img src="../assets/icons/send-icon.png" alt="" class="send-icon" id="send-icon">
+                        </div>
+                    </div>
+
+                </section>
+            </main>
+
+        </div>
+        <div class="modal-overlay" id="modalOverlay"></div>
+
+
+        <div class="modal" id="groupModal">
+            <span class="close-modal" id="closeGroupModal">X</span>
+
+            <h2>Create a new group</h2>
+            <p class="modal-subtext">Select friends to add to your Chat group.</p>
+
+            <div class="input-wrapper">
+                <input type="text" id="groupNameInput" placeholder="Enter the name of the group">
             </div>
-
-            <div class="chat-messages" id="chatMessages"></div>
-
-            <div class="chat-input">
-                <input type="text" placeholder="Type a message">
-                <img src="../assets/icons/send-icon.png" class="send-icon" id="send-icon">
-            </div>
-
+            <div id="groupUserList"></div>
+            <button class="primary-btn" id="createGroupBtn">Create Group</button>
         </div>
 
 
-    </div>
+        <div class="modal" id="profileModal">
+            <span class="close-modal" id="closeProfileModal">X</span>
 
-</div>
-</body>
+            <img src="../assets/images/default-avatar.png" id="profileAvatar" class="profile-large-avatar">
+
+            <h3 id="profileUsername">Username</h3>
+            <p id="profileLastSeen" class="last-seen-text">Last seen ...</p>
+            <div id="groupDetails" class="group-details"></div>
+        </div>
+        <div id="toastContainer" class="toast-container"></div>
+        <script type="module" src="/js/chat.js"></script>
+    </body>
 </html>
