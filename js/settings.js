@@ -17,6 +17,21 @@ const logoutBtn = document.querySelector(".logout-btn");
 
 usernameInput.value = currentUser.username;
 
+setUserOnline();
+
+
+function setUserOnline() {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users = users.map(user => {
+        if (user.id === currentUser.id) {
+            user.online = true;
+        }
+        return user;
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+}
 
 //save
 

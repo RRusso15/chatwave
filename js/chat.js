@@ -45,10 +45,26 @@ let activeTab = "Friends";
 let activeChat = null;
 let replyingTo = null;
 
+let typingTimeout = null;
 
 //opening modals for rgoup or profile view
 const profileHeader = document.querySelector(".chat-header");
 
+setUserOnline();
+
+
+function setUserOnline() {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users = users.map(user => {
+        if (user.id === currentUser.id) {
+            user.online = true;
+        }
+        return user;
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+}
 
 addGroupBtn.addEventListener("click", () => {
     overlay.classList.add("active");
@@ -395,6 +411,43 @@ messageInput.addEventListener("keypress", e => {
     if (e.key === "Enter") sendMessage();
 });
 
+// typing status
+messageInput.addEventListener("input", () => {
+    if (!activeChat) return;
+
+    let typingStatus = JSON.parse(localStorage.getItem("typingStatus")) || {};
+
+    if (!typingStatus[activeChat.id]) {
+        typingStatus[activeChat.id] = {};
+    }
+
+    typingStatus[activeChat.id][currentUser.id] = true;
+
+    localStorage.setItem("typingStatus", JSON.stringify(typingStatus));
+    clearTimeout(typingTimeout);
+
+    typingTimeout = setTimeout(() => {
+        stopTyping();
+    }, 1500);
+});
+
+function stopTyping() {
+    if (!activeChat) return;
+
+    let typingStatus = JSON.parse(localStorage.getItem("typingStatus")) || {};
+
+    if (typingStatus[activeChat.id]) {
+        delete typingStatus[activeChat.id][currentUser.id];
+
+        if (Object.keys(typingStatus[activeChat.id]).length === 0) {
+            delete typingStatus[activeChat.id];
+        }
+
+        localStorage.setItem("typingStatus", JSON.stringify(typingStatus));
+    }
+}
+
+
 function sendMessage() {
     if (!activeChat) return;
 
@@ -414,6 +467,7 @@ function sendMessage() {
 
     messages.push(newMessage);
     localStorage.setItem("messages", JSON.stringify(messages));
+    stopTyping();
 
     messageInput.value = "";
     renderMessages();
@@ -470,6 +524,35 @@ window.addEventListener("storage", function (e) {
     if (e.key === "messages") {
         messages = JSON.parse(e.newValue) || [];
 
+        const newMessages = messages.filter(m =>
+            m.senderId !== currentUser.id &&
+            !m.readBy?.includes(currentUser.id)
+        );
+
+        // Only show toast for newest message
+        if (newMessages.length > 0) {
+            const latest = newMessages[newMessages.length - 1];
+            // Don't notify if chat already open
+            if (!activeChat || 
+                activeChat.id !== latest.chatId || 
+                activeChat.type !== latest.chatType) {
+
+                const sender = users.find(u => u.id === latest.senderId);
+
+                let toastMessage = "";
+                if (latest.chatType === "group") {
+                    const group = groups.find(g => g.id == latest.chatId);
+
+                    toastMessage = `${group?.name} — ${sender?.username}: ${latest.content.substring(0, 40)}`;
+                } else {
+                    toastMessage = `${sender?.username}: ${latest.content.substring(0, 40)}`;
+                }
+                showToast(toastMessage);
+
+            }
+        }
+
+
         if (activeChat) {
             let updated = false;
 
@@ -521,6 +604,31 @@ window.addEventListener("storage", function (e) {
         groups = JSON.parse(e.newValue) || [];
         renderList();
     }
+
+    //typing indicator
+    if (e.key === "typingStatus") {
+
+        const typingStatus = JSON.parse(e.newValue) || {};
+        const typingIndicator = document.getElementById("typingIndicator");
+
+        if (!activeChat) return;
+
+        const chatTyping = typingStatus[activeChat.id];
+
+        if (chatTyping) {
+            const otherUserId = Object.keys(chatTyping)
+                .find(uid => uid !== currentUser.id);
+
+            if (otherUserId) {
+                const otherUser = users.find(u => u.id === otherUserId);
+                typingIndicator.textContent = `${otherUser?.username} is typing...`;
+                return;
+            }
+        }
+
+        typingIndicator.textContent = "";
+    }
+
 });
 
 
@@ -528,3 +636,19 @@ window.addEventListener("storage", function (e) {
 settingsBtn.addEventListener("click", function () {
     window.location.href = "./settings.html";
 });
+
+
+//toasting: Notifications
+function showToast(message) {
+    const container = document.getElementById("toastContainer");
+
+    const toast = document.createElement("div");
+    toast.classList.add("toast");
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
