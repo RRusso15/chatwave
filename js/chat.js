@@ -594,35 +594,38 @@ renderList();
 window.addEventListener("storage", function (e) {
 
     if (e.key === "messages") {
-        messages = JSON.parse(e.newValue) || [];
+        // Keep previous messages before updating
+        const oldMessages = messages;
+        const updatedMessages = JSON.parse(e.newValue) || [];
 
-        const newMessages = messages.filter(m =>
-            m.senderId !== currentUser.id &&
-            !m.readBy?.includes(currentUser.id)
+        // Find the newly added message (not existing before)
+        const newMessage = updatedMessages.find(m =>
+            !oldMessages.some(old => old.id === m.id)
         );
 
-        // Only show toast for newest message
-        if (newMessages.length > 0) {
-            const latest = newMessages[newMessages.length - 1];
-            // Don't notify if chat already open
-            if (!activeChat || 
-                activeChat.id !== latest.chatId || 
-                activeChat.type !== latest.chatType) {
+        messages = updatedMessages;
 
-                const sender = users.find(u => u.id === latest.senderId);
+        if (
+            newMessage &&
+            newMessage.senderId !== currentUser.id &&
+            (!activeChat ||
+            activeChat.id !== newMessage.chatId ||
+            activeChat.type !== newMessage.chatType)
+        ) {
+            const sender = users.find(u => u.id === newMessage.senderId);
 
-                let toastMessage = "";
-                if (latest.chatType === "group") {
-                    const group = groups.find(g => g.id == latest.chatId);
+            let toastMessage = "";
 
-                    toastMessage = `${group?.name} — ${sender?.username}: ${latest.content.substring(0, 40)}`;
-                } else {
-                    toastMessage = `${sender?.username}: ${latest.content.substring(0, 40)}`;
-                }
-                showToast(toastMessage);
-
+            if (newMessage.chatType === "group") {
+                const group = groups.find(g => g.id == newMessage.chatId);
+                toastMessage = `${group?.name} — ${sender?.username}: ${newMessage.content.substring(0, 40)}`;
+            } else {
+                toastMessage = `${sender?.username}: ${newMessage.content.substring(0, 40)}`;
             }
+
+            showToast(toastMessage);
         }
+
 
 
         if (activeChat) {
