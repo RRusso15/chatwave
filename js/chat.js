@@ -5,7 +5,6 @@ if (!currentUser) {
     window.location.href = "../index.html";
 }
 
-
 const chatList = document.getElementById("chatList");
 const chatPanel = document.getElementById("chatPanel");
 const leftPanel = document.getElementById("leftPanel");
@@ -16,27 +15,20 @@ const chatName = document.getElementById("chatName");
 const lastSeen = document.querySelector(".last-seen");
 const sendIcon = document.getElementById("send-icon");
 const messageInput = document.querySelector(".chat-input input");
-
 const emptyState = document.getElementById("emptyState");
 const chatContent = document.getElementById("chatContent");
-
 const settingsBtn = document.getElementById("settingsBtn");
-
 const addGroupBtn = document.getElementById("addGroupBtn");
 const groupModal = document.getElementById("groupModal");
 const profileModal = document.getElementById("profileModal");
 const overlay = document.getElementById("modalOverlay");
-
 const closeGroupModal = document.getElementById("closeGroupModal");
 const closeProfileModal = document.getElementById("closeProfileModal");
-
 const createGroupBtn = document.getElementById("createGroupBtn");
 const groupNameInput = document.getElementById("groupNameInput");
-
 const replyPreview = document.getElementById("replyPreview");
 const replyText = document.getElementById("replyText");
 const cancelReply = document.getElementById("cancelReply");
-
 const searchInput = document.getElementById("searchInput");
 let searchQuery = "";
 
@@ -53,9 +45,7 @@ let typingTimeout = null;
 
 //opening modals for rgoup or profile view
 const profileHeader = document.querySelector(".chat-header");
-
 setUserOnline();
-
 
 function setUserOnline() {
     let users = JSON.parse(localStorage.getItem("users")) || [];
@@ -66,7 +56,7 @@ function setUserOnline() {
         }
         return user;
     });
-
+    
     localStorage.setItem("users", JSON.stringify(users));
 }
 
@@ -102,7 +92,6 @@ searchInput.addEventListener("input", (e) => {
 
 profileHeader.addEventListener("click", (e) => {
     if (e.target.id === "backBtn") return;
-
     if (!activeChat) return;
 
     overlay.classList.add("active");
@@ -113,7 +102,6 @@ profileHeader.addEventListener("click", (e) => {
     const profileAvatar = document.getElementById("profileAvatar");
 
     if (activeChat.type === "group") {
-
         const group = groups.find(g => g.id == activeChat.id);
 
         profileUsername.textContent = group?.name || "Group";
@@ -147,14 +135,11 @@ profileHeader.addEventListener("click", (e) => {
     }
 });
 
-
 //helper to show group details fully
 function getUsername(userId) {
     const user = users.find(u => u.id === userId);
     return user ? user.username : "Unknown";
 }
-
-
 
 function closeModals() {
     overlay.classList.remove("active");
@@ -201,22 +186,17 @@ createGroupBtn.addEventListener("click", () => {
     renderList();
 });
 
-
-
 //listen  for tab close
 window.addEventListener("beforeunload", function () {
     let users = JSON.parse(localStorage.getItem("users")) || [];
-
     users = users.map(user => {
         if (user.id === currentUser.id) {
             user.online = false;
         }
         return user;
     });
-
     localStorage.setItem("users", JSON.stringify(users));
 });
-
 
 //switch tabs
 tabs.forEach(tab => {
@@ -235,13 +215,9 @@ function renderList() {
 
     if (activeTab === "Friends") {
         renderFriends();
-    }
-
-    if (activeTab === "Groups") {
+    }else if (activeTab === "Groups") {
         renderGroups();
-    }
-
-    if (activeTab === "Online") {
+    }else if (activeTab === "Online") {
         renderOnlineUsers();
     }
 
@@ -258,7 +234,6 @@ function renderFriends() {
         u.username.toLowerCase().includes(searchQuery)
     );
 
-
     filteredUsers.forEach(user => {
         const chatId = generatePrivateChatId(currentUser.id, user.id);
         const lastMessage = getLastMessage("private", chatId);
@@ -267,7 +242,6 @@ function renderFriends() {
             m.chatId === chatId &&
             !m.readBy.includes(currentUser.id)
         ).length;
-
 
         chatList.innerHTML += `
             <div class="chat-item" data-type="private" data-id="${chatId}" data-username="${user.username}">
@@ -284,7 +258,6 @@ function renderFriends() {
 
 //for groups condition
 function renderGroups() {
-
     const userGroups = groups.filter(group =>
         group.members?.includes(currentUser.id) &&
         group.name.toLowerCase().includes(searchQuery)
@@ -293,7 +266,6 @@ function renderGroups() {
 
     userGroups.forEach(group => {
         const lastMessage = getLastMessage("group", group.id);
-
         chatList.innerHTML += `
             <div class="chat-item" 
                  data-type="group" 
@@ -394,7 +366,6 @@ function renderMessages() {
     convo.forEach(msg => {
         const isSent = msg.senderId === currentUser.id;
         const sender = users.find(u => u.id === msg.senderId);
-
         let senderNameTag = "";
         let replyQuote = "";
 
@@ -413,7 +384,6 @@ function renderMessages() {
                 `;
             }
         }
-
 
         chatMessages.innerHTML += `
             <div class="message-wrapper ${isSent ? "sent-wrapper" : "received-wrapper"}">
@@ -474,8 +444,6 @@ function renderMessages() {
     });
 
 }
-
-
 
 //send a message
 sendIcon.addEventListener("click", sendMessage);
@@ -580,9 +548,7 @@ function formatTime(isoString) {
     });
 }
 
-
 //mobiile---back
-
 backBtn.addEventListener("click", function () {
     chatPanel.classList.remove("active");
     leftPanel.style.display = "flex";
@@ -620,14 +586,12 @@ window.addEventListener("storage", function (e) {
                     toastMessage = `${sender?.username}: ${latest.content.substring(0, 40)}`;
                 }
                 showToast(toastMessage);
-
             }
         }
 
 
         if (activeChat) {
             let updated = false;
-
             messages.forEach(m => {
                 if (
                     m.chatType === activeChat.type &&
@@ -645,17 +609,13 @@ window.addEventListener("storage", function (e) {
             if (updated) {
                 localStorage.setItem("messages", JSON.stringify(messages));
             }
-
             renderMessages();
         }
-
         renderList();
     }
 
-
     if (e.key === "users") {
         users = JSON.parse(e.newValue) || [];
-
         // Update online status in header if chat is open
         if (activeChat && activeChat.type === "private") {
             const otherUserId = activeChat.id
@@ -668,7 +628,6 @@ window.addEventListener("storage", function (e) {
                 ? "Private Chat: User Online"
                 : "Private Chat: User Offline";
         }
-
         renderList();
     }
 
@@ -679,7 +638,6 @@ window.addEventListener("storage", function (e) {
 
     //typing indicator
     if (e.key === "typingStatus") {
-
         const typingStatus = JSON.parse(e.newValue) || {};
         const typingIndicator = document.getElementById("typingIndicator");
 
@@ -697,27 +655,22 @@ window.addEventListener("storage", function (e) {
                 return;
             }
         }
-
         typingIndicator.textContent = "";
     }
 
 });
 
-
-
 settingsBtn.addEventListener("click", function () {
     window.location.href = "./settings.html";
 });
 
-
 //toasting: Notifications
 function showToast(message) {
     const container = document.getElementById("toastContainer");
-
     const toast = document.createElement("div");
+
     toast.classList.add("toast");
     toast.textContent = message;
-
     container.appendChild(toast);
 
     setTimeout(() => {
