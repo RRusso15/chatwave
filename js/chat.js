@@ -106,10 +106,20 @@ profileHeader.addEventListener("click", () => {
         const group = groups.find(g => g.id == activeChat.id);
 
         profileUsername.textContent = group?.name || "Group";
-        profileLastSeen.textContent = "Group Chat";
+        profileLastSeen.textContent = `Created by ${getUsername(group?.createdBy)}`;
         profileAvatar.src = "../assets/user-profiles/avatar1.png";
 
-    } else {
+        const groupDetails = document.getElementById("groupDetails");
+
+        const memberNames = group.members
+            .map(memberId => getUsername(memberId))
+            .join(", ");
+
+        groupDetails.innerHTML = `
+            <p><strong>Members:</strong></p>
+            <p>${memberNames}</p>
+        `;
+    }else {
 
         const otherUserId = activeChat.id
             .split("_")
@@ -125,6 +135,13 @@ profileHeader.addEventListener("click", () => {
         profileAvatar.src = `../assets/user-profiles/avatar${randomAvatar()}.png`;
     }
 });
+
+
+//helper to show group details fully
+function getUsername(userId) {
+    const user = users.find(u => u.id === userId);
+    return user ? user.username : "Unknown";
+}
 
 
 
