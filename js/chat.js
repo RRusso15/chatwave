@@ -37,6 +37,10 @@ const replyPreview = document.getElementById("replyPreview");
 const replyText = document.getElementById("replyText");
 const cancelReply = document.getElementById("cancelReply");
 
+const searchInput = document.getElementById("searchInput");
+let searchQuery = "";
+
+
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
 let groups = JSON.parse(localStorage.getItem("groups")) || [];
@@ -90,7 +94,14 @@ addGroupBtn.addEventListener("click", () => {
         });
 });
 
+searchInput.addEventListener("input", (e) => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    renderList();
+});
+
+
 profileHeader.addEventListener("click", () => {
+    if (e.target.id === "backBtn") return;
 
     if (!activeChat) return;
 
@@ -233,11 +244,20 @@ function renderList() {
     if (activeTab === "Online") {
         renderOnlineUsers();
     }
+
+    if (chatList.innerHTML.trim() === "") {
+        chatList.innerHTML = `<p class="no-results">No chats found</p>`;
+    }
+
 }
 
 //render every user
 function renderFriends() {
-    const filteredUsers = users.filter(u => u.id !== currentUser.id);
+    const filteredUsers = users.filter(u =>
+        u.id !== currentUser.id &&
+        u.username.toLowerCase().includes(searchQuery)
+    );
+
 
     filteredUsers.forEach(user => {
         const chatId = generatePrivateChatId(currentUser.id, user.id);
@@ -266,8 +286,10 @@ function renderFriends() {
 function renderGroups() {
 
     const userGroups = groups.filter(group =>
-        group.members?.includes(currentUser.id)
+        group.members?.includes(currentUser.id) &&
+        group.name.toLowerCase().includes(searchQuery)
     );
+
 
     userGroups.forEach(group => {
         const lastMessage = getLastMessage("group", group.id);
@@ -291,8 +313,12 @@ function renderGroups() {
 //only online users render
 function renderOnlineUsers() {
     const onlineUsers = users.filter(
-        u => u.id !== currentUser.id && u.online === true
+        u =>
+            u.id !== currentUser.id &&
+            u.online === true &&
+            u.username.toLowerCase().includes(searchQuery)
     );
+
 
     onlineUsers.forEach(user => {
         const chatId = generatePrivateChatId(currentUser.id, user.id);

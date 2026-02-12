@@ -554,3 +554,10 @@ body {
     width: 16px;
     height: 16px;
 }
+
+/*Chat list empty*/
+.no-results {
+    padding: 15px;
+    text-align: center;
+    opacity: 0.6;
+}
