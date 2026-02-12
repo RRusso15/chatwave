@@ -69,6 +69,21 @@ function setUserOnline() {
 addGroupBtn.addEventListener("click", () => {
     overlay.classList.add("active");
     groupModal.classList.add("active");
+    const groupUserList = document.getElementById("groupUserList");
+    groupUserList.innerHTML = "";
+
+    users
+        .filter(u => u.id !== currentUser.id)
+        .forEach(user => {
+            groupUserList.innerHTML += `
+                <label>
+                    <input type="checkbox" 
+                        class="group-user-checkbox" 
+                        value="${user.id}">
+                    ${user.username}
+                </label><br>
+            `;
+        });
 });
 
 profileHeader.addEventListener("click", () => {
@@ -132,11 +147,18 @@ createGroupBtn.addEventListener("click", () => {
         return;
     }
 
+    const selectedUsers = Array.from(
+    document.querySelectorAll(".group-user-checkbox:checked")
+    ).map(cb => cb.value);
+
     const newGroup = {
-        id: Date.now(),
+        id: "g" + Date.now(),
         name: groupName,
+        members: [...selectedUsers, currentUser.id],
+        createdBy: currentUser.id,
         createdAt: new Date().toISOString()
     };
+
 
     groups.push(newGroup);
 
@@ -221,26 +243,29 @@ function renderFriends() {
 
 //for groups condition
 function renderGroups() {
-    groups.forEach(group => {
+
+    const userGroups = groups.filter(group =>
+        group.members?.includes(currentUser.id)
+    );
+
+    userGroups.forEach(group => {
         const lastMessage = getLastMessage("group", group.id);
-        const unreadCount = messages.filter(m =>
-            m.chatType === "group" &&
-            m.chatId == group.id &&
-            !m.readBy.includes(currentUser.id)
-        ).length;
 
         chatList.innerHTML += `
-            <div class="chat-item" data-type="group" data-id="${group.id}" data-username="${group.name}">
+            <div class="chat-item" 
+                 data-type="group" 
+                 data-id="${group.id}" 
+                 data-username="${group.name}">
                 <img src="../assets/user-profiles/avatar${randomAvatar()}.png">
                 <div class="chat-info">
                     <h4>${group.name}</h4>
                     <p>${lastMessage || "Group chat"}</p>
                 </div>
-                ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount > 9 ? "9+" : unreadCount}</span>` : ""}
             </div>
         `;
     });
 }
+
 
 //only online users render
 function renderOnlineUsers() {
