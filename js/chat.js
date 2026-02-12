@@ -100,7 +100,7 @@ searchInput.addEventListener("input", (e) => {
 });
 
 
-profileHeader.addEventListener("click", () => {
+profileHeader.addEventListener("click", (e) => {
     if (e.target.id === "backBtn") return;
 
     if (!activeChat) return;
