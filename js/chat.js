@@ -33,6 +33,9 @@ const closeProfileModal = document.getElementById("closeProfileModal");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const groupNameInput = document.getElementById("groupNameInput");
 
+const replyPreview = document.getElementById("replyPreview");
+const replyText = document.getElementById("replyText");
+const cancelReply = document.getElementById("cancelReply");
 
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
@@ -40,10 +43,10 @@ let groups = JSON.parse(localStorage.getItem("groups")) || [];
 
 let activeTab = "Friends";
 let activeChat = null;
+let replyingTo = null;
 
 
 //opening modals for rgoup or profile view
-
 const profileHeader = document.querySelector(".chat-header");
 
 
@@ -135,7 +138,7 @@ window.addEventListener("beforeunload", function () {
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
     users = users.map(user => {
-        if (user.email === currentUser.email) {
+        if (user.id === currentUser.id) {
             user.online = false;
         }
         return user;
@@ -180,6 +183,12 @@ function renderFriends() {
     filteredUsers.forEach(user => {
         const chatId = generatePrivateChatId(currentUser.id, user.id);
         const lastMessage = getLastMessage("private", chatId);
+        const unreadCount = messages.filter(m =>
+            m.chatType === "private" &&
+            m.chatId === chatId &&
+            !m.readBy.includes(currentUser.id)
+        ).length;
+
 
         chatList.innerHTML += `
             <div class="chat-item" data-type="private" data-id="${chatId}" data-username="${user.username}">
@@ -188,6 +197,7 @@ function renderFriends() {
                     <h4>${user.username}</h4>
                     <p>${lastMessage || "No messages yet"}</p>
                 </div>
+                ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount > 9 ? "9+" : unreadCount}</span>` : ""}
             </div>
         `;
     });
@@ -197,6 +207,11 @@ function renderFriends() {
 function renderGroups() {
     groups.forEach(group => {
         const lastMessage = getLastMessage("group", group.id);
+        const unreadCount = messages.filter(m =>
+            m.chatType === "group" &&
+            m.chatId == group.id &&
+            !m.readBy.includes(currentUser.id)
+        ).length;
 
         chatList.innerHTML += `
             <div class="chat-item" data-type="group" data-id="${group.id}" data-username="${group.name}">
@@ -205,6 +220,7 @@ function renderGroups() {
                     <h4>${group.name}</h4>
                     <p>${lastMessage || "Group chat"}</p>
                 </div>
+                ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount > 9 ? "9+" : unreadCount}</span>` : ""}
             </div>
         `;
     });
@@ -257,6 +273,19 @@ chatList.addEventListener("click", function (e) {
 
     renderMessages();
 
+    // Mark messages as read
+    messages.forEach(m => {
+        if (
+            m.chatType === activeChat.type &&
+            m.chatId === activeChat.id &&
+            !m.readBy.includes(currentUser.id)
+        ) {
+            m.readBy.push(currentUser.id);
+        }
+    });
+
+    localStorage.setItem("messages", JSON.stringify(messages));
+    renderList();
     if (window.innerWidth <= 900) {
         chatPanel.classList.add("active");
         leftPanel.style.display = "none";
@@ -279,16 +308,30 @@ function renderMessages() {
         const sender = users.find(u => u.id === msg.senderId);
 
         let senderNameTag = "";
+        let replyQuote = "";
 
         // Only show sender name in GROUP chats and not for yourself
         if (activeChat.type === "group" && !isSent) {
             senderNameTag = `<div class="sender-name">${sender?.username}</div>`;
         }
 
+        if (msg.replyTo) {
+            const original = messages.find(m => m.id === msg.replyTo);
+            if (original) {
+                replyQuote = `
+                    <div class="reply-quote" data-scroll="${original.id}">
+                        ${original.content.substring(0, 50)}
+                    </div>
+                `;
+            }
+        }
+
+
         chatMessages.innerHTML += `
             <div class="message-wrapper ${isSent ? "sent-wrapper" : "received-wrapper"}">
                 ${senderNameTag}
-                <div class="message ${isSent ? "sent" : "received"}">
+                <div class="message ${isSent ? "sent" : "received"}" data-id="${msg.id}">
+                    ${replyQuote}
                     <div class="message-text">${msg.content}</div>
                     <div class="message-time">${formatTime(msg.timestamp)}</div>
                 </div>
@@ -298,7 +341,52 @@ function renderMessages() {
 
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    //scroll to the message being replied
+    document.querySelectorAll(".reply-quote").forEach(el => {
+        el.addEventListener("click", function () {
+            const targetId = this.dataset.scroll;
+            const targetMessage = document.querySelector(`.message[data-id="${targetId}"]`);
+
+            if (targetMessage) {
+                targetMessage.scrollIntoView({ behavior: "smooth", block: "center" });
+                targetMessage.classList.add("highlight-message");
+
+                setTimeout(() => {
+                    targetMessage.classList.remove("highlight-message");
+                }, 1000);
+            }
+        });
+    });
+
+
+    // Add click listener to each message
+    document.querySelectorAll(".message").forEach(el => {
+        el.addEventListener("click", function (e) {
+
+            if (e.target.closest(".reply-quote")) return;
+            
+            const messageId = this.dataset.id;
+            const originalMessage = messages.find(m => m.id === messageId);
+
+            if (!originalMessage) return;
+
+            replyingTo = messageId;
+            replyText.textContent = originalMessage.content.length > 50
+                ? originalMessage.content.substring(0, 50) + "..."
+                : originalMessage.content;
+
+            replyPreview.style.display = "flex";
+            messageInput.focus();
+        });
+    });
+
+    cancelReply.addEventListener("click", () => {
+        replyingTo = null;
+        replyPreview.style.display = "none";
+    });
+
 }
+
 
 
 //send a message
@@ -319,7 +407,9 @@ function sendMessage() {
         content: content,
         timestamp: new Date().toISOString(),
         chatType: activeChat.type,
-        chatId: activeChat.id
+        chatId: activeChat.id,
+        replyTo: replyingTo,
+        readBy: [currentUser.id]
     };
 
     messages.push(newMessage);
@@ -327,7 +417,9 @@ function sendMessage() {
 
     messageInput.value = "";
     renderMessages();
-    renderList(); // update last message preview
+    renderList();
+    replyingTo = null;
+    replyPreview.style.display = "none";
 }
 
 
@@ -379,11 +471,32 @@ window.addEventListener("storage", function (e) {
         messages = JSON.parse(e.newValue) || [];
 
         if (activeChat) {
+            let updated = false;
+
+            messages.forEach(m => {
+                if (
+                    m.chatType === activeChat.type &&
+                    m.chatId === activeChat.id
+                ) {
+                    if (!m.readBy) m.readBy = [];
+
+                    if (!m.readBy.includes(currentUser.id)) {
+                        m.readBy.push(currentUser.id);
+                        updated = true;
+                    }
+                }
+            });
+
+            if (updated) {
+                localStorage.setItem("messages", JSON.stringify(messages));
+            }
+
             renderMessages();
         }
 
         renderList();
     }
+
 
     if (e.key === "users") {
         users = JSON.parse(e.newValue) || [];

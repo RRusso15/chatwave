@@ -222,9 +222,16 @@ body {
 .chat-input {
     position: relative;
     display: flex;
+    flex-direction: column;
     padding: 2rem;
     background: none;
 }
+
+.input-row {
+    display: flex;
+    align-items: center;
+}
+
 
 .chat-input input {
     flex: 1;
@@ -235,16 +242,13 @@ body {
 
 
 .send-icon {
-    position: absolute;
-    
-    right: 3.5rem;
     width: 22px;
     height: 22px;
     cursor: pointer;
     opacity: 0.4;
-    top: 50%;
-    transform: translateY(-50%);
+    margin-left: -45px;
 }
+
 
 .send-icon:hover {
     opacity: 0.6;
@@ -416,4 +420,65 @@ body {
 .last-seen-text {
     font-size: 14px;
     color: #777;
+}
+
+/*Replt to styles*/
+#cancelReply {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.reply-preview {
+    background: #f3f3f3;
+    border-left: 4px solid #8b5cf6;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reply-preview button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.reply-quote {
+    background: #ececec;
+    border-left: 3px solid #8b5cf6;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.highlight-message {
+    animation: highlightFlash 1s ease;
+}
+
+@keyframes highlightFlash {
+    0% { background: #e9d5ff; }
+    100% { background: inherit; }
+}
+
+
+/* unread tag */
+.unread-badge {
+    background: #8b5cf6;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
 }

@@ -32,7 +32,9 @@ export const seedData = {
       content: "Welcome to Chatwave!",
       timestamp: "2026-02-11T10:00:00.000Z",
       chatType: "group",
-      chatId: "g1"
+      chatId: "g1",
+      replyTo: null,
+      readBy: ["u1", "u2"]
     },
     {
       id: "m2",
@@ -40,7 +42,9 @@ export const seedData = {
       content: "Excited to start chatting!",
       timestamp: "2026-02-11T10:05:00.000Z",
       chatType: "group",
-      chatId: "g1"
+      chatId: "g1",
+      replyTo: null,
+      readBy: ["u1", "u2"]
     }
   ]
 };

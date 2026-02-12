@@ -68,8 +68,14 @@ Date: 11/02/2026
             <div class="chat-messages" id="chatMessages"></div>
 
             <div class="chat-input">
-                <input type="text" placeholder="Type a message">
-                <img src="../assets/icons/send-icon.png" class="send-icon" id="send-icon">
+                <div id="replyPreview" class="reply-preview" style="display:none;">
+                    <span id="replyText"></span>
+                    <button id="cancelReply">✕</button>
+                </div>
+                <div class="input-row">
+                    <input type="text" placeholder="Type a message">
+                    <img src="../assets/icons/send-icon.png" class="send-icon" id="send-icon">
+                </div>
             </div>
 
         </div>
