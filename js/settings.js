@@ -34,34 +34,58 @@ function setUserOnline() {
 }
 
 //save
-
 form.addEventListener("submit", function (e) {
     e.preventDefault();
 
     formMessage.textContent = "";
     formMessage.style.color = "red";
 
+    const newUsername = usernameInput.value.trim();
     const newPassword = newPasswordInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
 
-    if (!newPassword || !confirmPassword) {
-        formMessage.textContent = "Please fill in both password fields.";
-        return;
-    }
-
-    if (newPassword !== confirmPassword) {
-        formMessage.textContent = "Passwords do not match.";
-        return;
-    }
-
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    //update user in users array
+    
+    if (newUsername !== currentUser.username) {
+
+        if (!newUsername) {
+            formMessage.textContent = "Username cannot be empty.";
+            return;
+        }
+
+        const usernameExists = users.some(user =>
+            user.username.toLowerCase() === newUsername.toLowerCase() &&
+            user.id !== currentUser.id
+        );
+
+        if (usernameExists) {
+            formMessage.textContent = "Username already taken.";
+            return;
+        }
+    }
+
+    
+    if (newPassword || confirmPassword) {
+
+        if (!newPassword || !confirmPassword) {
+            formMessage.textContent = "Please fill in both password fields.";
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            formMessage.textContent = "Passwords do not match.";
+            return;
+        }
+    }
+
+    
     users = users.map(user => {
         if (user.id === currentUser.id) {
             return {
                 ...user,
-                password: newPassword
+                username: newUsername,
+                password: newPassword ? newPassword : user.password
             };
         }
         return user;
@@ -69,21 +93,27 @@ form.addEventListener("submit", function (e) {
 
     localStorage.setItem("users", JSON.stringify(users));
 
-    //update sessionStorage currentUser
-    currentUser.password = newPassword;
+    
+    currentUser.username = newUsername;
+    if (newPassword) {
+        currentUser.password = newPassword;
+    }
+
     sessionStorage.setItem("currentUser", JSON.stringify(currentUser));
 
     formMessage.style.color = "green";
-    formMessage.textContent = "Password updated successfully.";
+    formMessage.textContent = "Profile updated successfully.";
 
     newPasswordInput.value = "";
     confirmPasswordInput.value = "";
 });
 
+
 cancelBtn.addEventListener("click", function () {
     newPasswordInput.value = "";
     confirmPasswordInput.value = "";
     formMessage.textContent = "";
+    usernameInput.value=currentUser.username;
 });
 
 
@@ -93,7 +123,6 @@ backBtn.addEventListener("click", function () {
 
 
 // logout functionality
-
 logoutBtn.addEventListener("click", function () {
 
     const confirmLogout = confirm("Are you sure you want to log out?");
