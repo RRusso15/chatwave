@@ -1,20 +1,48 @@
 export const seedData = {
   users: [
-    {
-      id: "u1",
-      username: "russell",
-      password: "123456",
-      groups: ["g1"],
-      online: false
-    },
-    {
-      id: "u2",
-      username: "john",
-      password: "password123",
-      groups: ["g1"],
-      online: false
-    }
-  ],
+  {
+    id: "u1",
+    username: "russell",
+    password: "123456",
+    groups: ["g1"],
+    online: false
+  },
+  {
+    id: "u2",
+    username: "john",
+    password: "password123",
+    groups: ["g1"],
+    online: false
+  },
+  {
+    id: "u3",
+    username: "sarah",
+    password: "123456",
+    groups: [],
+    online: false
+  },
+  {
+    id: "u4",
+    username: "michael",
+    password: "123456",
+    groups: [],
+    online: false
+  },
+  {
+    id: "u5",
+    username: "emma",
+    password: "123456",
+    groups: [],
+    online: false
+  },
+  {
+    id: "u6",
+    username: "david",
+    password: "123456",
+    groups: [],
+    online: false
+  }
+],
 
   groups: [
     {

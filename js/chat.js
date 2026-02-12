@@ -76,13 +76,17 @@ addGroupBtn.addEventListener("click", () => {
         .filter(u => u.id !== currentUser.id)
         .forEach(user => {
             groupUserList.innerHTML += `
-                <label>
-                    <input type="checkbox" 
+            <div class="group-user-row">
+                <label class="group-user-label">
+                    <input 
+                        type="checkbox" 
                         class="group-user-checkbox" 
-                        value="${user.id}">
-                    ${user.username}
-                </label><br>
-            `;
+                        value="${user.id}"
+                    >
+                    <span>${user.username}</span>
+                </label>
+            </div>`;
+
         });
 });
 
