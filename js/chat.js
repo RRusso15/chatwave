@@ -51,6 +51,21 @@ let replyingTo = null;
 
 let typingTimeout = null;
 
+let usersUpdated = false;
+
+//assigning avatar to users who dont have one
+users = users.map(user => {
+    if (!user.avatar) {
+        user.avatar = Math.floor(Math.random() * 7) + 1;
+        usersUpdated = true;
+    }
+    return user;
+});
+
+if (usersUpdated) {
+    localStorage.setItem("users", JSON.stringify(users));
+}
+
 //opening modals for rgoup or profile view
 const profileHeader = document.querySelector(".chat-header");
 
@@ -143,7 +158,7 @@ profileHeader.addEventListener("click", (e) => {
             ? "User Online"
             : "User Offline";
 
-        profileAvatar.src = `../assets/user-profiles/avatar${randomAvatar()}.png`;
+        profileAvatar.src = `../assets/user-profiles/avatar${otherUser?.avatar}.png`;
     }
 });
 
@@ -271,7 +286,7 @@ function renderFriends() {
 
         chatList.innerHTML += `
             <div class="chat-item" data-type="private" data-id="${chatId}" data-username="${user.username}">
-                <img src="../assets/user-profiles/avatar${randomAvatar()}.png">
+                <img src="../assets/user-profiles/avatar${user.avatar}.png">
                 <div class="chat-info">
                     <h4>${user.username}</h4>
                     <p>${lastMessage || "No messages yet"}</p>
@@ -299,7 +314,7 @@ function renderGroups() {
                  data-type="group" 
                  data-id="${group.id}" 
                  data-username="${group.name}">
-                <img src="../assets/user-profiles/avatar${randomAvatar()}.png">
+                <img src="../assets/user-profiles/avatar1.png">
                 <div class="chat-info">
                     <h4>${group.name}</h4>
                     <p>${lastMessage || "Group chat"}</p>
@@ -325,7 +340,7 @@ function renderOnlineUsers() {
 
         chatList.innerHTML += `
             <div class="chat-item" data-type="private" data-id="${chatId}" data-username="${user.username}">
-                <img src="../assets/user-profiles/avatar${randomAvatar()}.png">
+                <img src="../assets/user-profiles/avatar${user.avatar}.png">
                 <div class="chat-info">
                     <h4>${user.username}</h4>
                     <p>Online</p>
@@ -338,6 +353,7 @@ function renderOnlineUsers() {
 //open chat
 chatList.addEventListener("click", function (e) {
     const item = e.target.closest(".chat-item");
+    const chatHeaderAvatar = document.getElementById("chatHeaderAvatar");
     if (!item) return;
 
     const type = item.dataset.type;
@@ -349,9 +365,12 @@ chatList.addEventListener("click", function (e) {
     chatName.textContent = name;
     if (type === "group") {
         lastSeen.textContent = "Group Chat";
+        chatHeaderAvatar.src = "../assets/user-profiles/avatar1.png";
     } else {
         const otherUserId = id.split("_").find(uid => uid !== currentUser.id);
         const otherUser = users.find(u => u.id == otherUserId);
+
+        chatHeaderAvatar.src = `../assets/user-profiles/avatar${otherUser?.avatar}.png`;
 
         lastSeen.textContent = otherUser?.online ? "Private Chat: User Online" : "Private Chat: User Offline";
     }
@@ -564,10 +583,6 @@ function getLastMessage(type, chatId) {
 
 function generatePrivateChatId(user1, user2) {
     return [user1, user2].sort().join("_");
-}
-
-function randomAvatar() {
-    return Math.floor(Math.random() * 7) + 1;
 }
 
 //get time from timestamp
